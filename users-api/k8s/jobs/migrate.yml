@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: users-migrate
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: users-migrate
+          image: mo7zayed/k8s-users-api:latest
+          imagePullPolicy: Always
+          command: ["/bin/sh"]
+          args:
+            - "-c"
+            - "php artisan optimize && php -d memory_limit=-1 artisan migrate --force"
+          envFrom:
+            - configMapRef:
+                name: users-configs
+            - secretRef:
+                name: users-secrets

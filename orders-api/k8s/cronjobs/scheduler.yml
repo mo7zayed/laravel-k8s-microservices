@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: orders-scheduler
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: scheduler
+              image: mo7zayed/k8s-orders-api:latest
+              imagePullPolicy: Always
+              command: ["/bin/sh"]
+              args:
+                - "-c"
+                - "php artisan optimize && php -d memory_limit=-1 artisan schedule:run --verbose --no-interaction"
+              resources:
+                limits:
+                  cpu: "100m"
+                  memory: "256Mi"
+              envFrom:
+                - configMapRef:
+                    name: orders-configs
+                - secretRef:
+                    name: orders-secrets

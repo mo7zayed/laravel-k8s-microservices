@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-horizon
+  labels:
+    app: orders-horizon
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orders-horizon
+  template:
+    metadata:
+      labels:
+        app: orders-horizon
+    spec:
+      containers:
+        - name: orders-horizon
+          image: mo7zayed/k8s-orders-api:latest
+          imagePullPolicy: Always
+          command: ["/bin/sh"]
+          args:
+            - "-c"
+            - "php artisan optimize && php -d memory_limit=-1 artisan horizon"
+          resources:
+            limits:
+              cpu: "100m"
+              memory: "256Mi"
+          envFrom:
+            - configMapRef:
+                name: orders-configs
+            - secretRef:
+                name: orders-secrets
