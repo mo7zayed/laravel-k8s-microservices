@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
@@ -28,8 +29,8 @@ class Handler extends ExceptionHandler
             //
         });
 
-        $this->renderable(function (NotFoundHttpException $e, $request) {
-            dd($request->url(), $request->path(), $request->all());
+        $this->renderable(function (NotFoundHttpException $e, Request $request) {
+            dd($request->headers->all(), $request->url(), $request->path(), $request->all());
         });
     }
 }
